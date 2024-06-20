@@ -1,5 +1,6 @@
 package com.example.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,7 +18,6 @@ public class User {
     private int age;
     private String username;
     private String password;
-//
 
     public String getId() {
         return id;
@@ -58,6 +58,31 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
-//    @ManyToMany(mappedBy = "users") // Refers to the property in Role
-//    List<Role> roles;
+
+    public List<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
+    }
+
+    public List<UserAddress> getUserAddresses() {
+        return userAddresses;
+    }
+
+    public void setUserAddresses(List<UserAddress> userAddresses) {
+        this.userAddresses = userAddresses;
+    }
+
+    @ManyToMany() // Refers to the property in Role
+    @JoinTable(
+        name = "role_user", // I would name this user_team since the user can have many teams, and vice versa
+        joinColumns = @JoinColumn(name = "role_id",  referencedColumnName = "id"),
+        inverseJoinColumns = @JoinColumn(name = "user_id" , referencedColumnName = "id")
+    )
+    List<Role> roles;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY, mappedBy = "user")
+    List<UserAddress> userAddresses;
 }
